@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import evening.securitywebapp.bean.UserAccount;
+import evening.securitywebapp.config.SecurityConfig;
   
 public class DataDAO {
  
@@ -16,7 +17,7 @@ public class DataDAO {
    private static void initUsers() {
  
       // This user has a role as EMPLOYEE.
-      UserAccount emp = new UserAccount("employee1", "123", UserAccount.GENDER_MALE, //
+      UserAccount emp = new UserAccount("employee1", "123", UserAccount.GENDER_MALE, 
             SecurityConfig.ROLE_EMPLOYEE);
  
       // This user has 2 roles EMPLOYEE and MANAGER.

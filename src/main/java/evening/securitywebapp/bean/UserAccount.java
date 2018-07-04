@@ -18,7 +18,7 @@ public class UserAccount {
  
    }
  
-   public UserAccount(String userName, String password, String gender, List<String> roles) {
+   public UserAccount(String userName, String password, String gender, String... roles) {
 	   
       this.userName = userName;
       this.password = password;
