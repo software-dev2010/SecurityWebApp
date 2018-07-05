@@ -15,7 +15,7 @@
  
       <h3>Login Page</h3>
  
-      <p style="color: red;">${errorString}</p>
+      <p style="color: red;">${errorMessage}</p>
  
       <form method="POST" action="${pageContext.request.contextPath}/login">
          <input type="hidden" name="redirectId" value="${param.redirectId}" />
