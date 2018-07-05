@@ -8,6 +8,7 @@ public class UserAccount {
    public static final String GENDER_MALE = "M";
    public static final String GENDER_FEMALE = "F";
  
+   private int id;
    private String userName;
    private String gender;
    private String password;
@@ -18,8 +19,9 @@ public class UserAccount {
  
    }
  
-   public UserAccount(String userName, String password, String gender, String... roles) {
+   public UserAccount(int id, String userName, String password, String gender, String... roles) {
 	   
+	  this.id = id;
       this.userName = userName;
       this.password = password;
       this.gender = gender;
@@ -32,6 +34,16 @@ public class UserAccount {
             this.roles.add(r);
          }
       }
+   }
+   
+   public int getId() {
+	   
+	   return id;
+   }
+	 
+   public void setId(int id) {
+		   
+	   this.id = id;
    }
  
    public String getUserName() {

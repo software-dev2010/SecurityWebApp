@@ -1,40 +1,97 @@
 package evening.securitywebapp.utils;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
+
+import javax.sql.DataSource;
 
 import evening.securitywebapp.bean.UserAccount;
 import evening.securitywebapp.config.SecurityConfig;
   
 public class DataDAO {
- 
-   private static final Map<String, UserAccount> mapUsers = new HashMap<String, UserAccount>();
- 
-   static {
-      initUsers();
-   }
- 
-   private static void initUsers() {
- 
-      // This user has a role as EMPLOYEE.
-      UserAccount emp = new UserAccount("employee1", "123", UserAccount.GENDER_MALE, 
-            SecurityConfig.ROLE_EMPLOYEE);
- 
-      // This user has 2 roles EMPLOYEE and MANAGER.
-      UserAccount mng = new UserAccount("manager1", "123", UserAccount.GENDER_MALE, //
-            SecurityConfig.ROLE_EMPLOYEE, SecurityConfig.ROLE_MANAGER);
- 
-      mapUsers.put(emp.getUserName(), emp);
-      mapUsers.put(mng.getUserName(), mng);
-   }
- 
-   // Find a User by userName and password.
-   public static UserAccount findUser(String userName, String password) {
-      UserAccount u = mapUsers.get(userName);
-      if (u != null && u.getPassword().equals(password)) {
-         return u;
-      }
-      return null;
-   }
- 
+    
+	 private DataSource dataSource;
+
+	 public DataDAO(DataSource theDataSource) {
+		
+		 dataSource = theDataSource;
+	 }
+   
+     // Find a User by userName and password.
+	 public UserAccount findUser(String theUsername, String thePassword) throws Exception {
+			
+		    UserAccount theUser = null;
+			
+			Connection myConn = null;
+			PreparedStatement myStmt = null;
+			ResultSet myRs = null;
+					 
+			try {	
+								
+				// get connection to database
+				myConn = dataSource.getConnection();
+								
+				// create sql to get selected student
+				String sql = "SELECT * FROM task WHERE username = ? AND password = ?";
+				
+				// create prepared statement
+				myStmt = myConn.prepareStatement(sql);
+				
+				// set params
+				myStmt.setString(1, theUsername);
+				myStmt.setString(2, thePassword); 
+				
+				// execute statement
+				myRs = myStmt.executeQuery();
+							
+				if (myRs.next()) {
+					
+					int id = myRs.getInt("id");
+					String username = myRs.getString("username");
+					String pass = myRs.getString("password");
+					String gender = myRs.getString("gender");
+					String role = myRs.getString("role");
+					
+					// use the userId during construction
+					if (role.equals("MANAGER")) 
+						theUser = new UserAccount(id, username, pass, gender, 
+								SecurityConfig.ROLE_EMPLOYEE, SecurityConfig.ROLE_MANAGER);
+					else 
+						theUser = new UserAccount(id, username, pass, gender, 
+								SecurityConfig.ROLE_EMPLOYEE);
+				}
+							
+				return theUser;
+						
+			} finally {
+					
+					close(myConn, myStmt, myRs);
+			}
+	 }
+	 
+		private void close(Connection myConn, Statement myStmt, ResultSet myRs) {
+
+			try {
+				
+				if (myRs != null) {
+					
+					myRs.close();
+				}
+				
+				if (myStmt != null) {
+					
+					myStmt.close();
+				}
+				
+				if (myConn != null) {
+					
+					myConn.close();   // doesn't really close it ... just puts back in connection pool
+				}                     // and makes it available for someone else to use
+			} catch (Exception exc) {
+				
+				System.out.println(exc);
+			}
+		}
 }
